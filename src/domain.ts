@@ -112,6 +112,7 @@ export const companyLabels = {
   imput: "imput",
   bluesky: "Bluesky",
   laravel: "Laravel",
+  tailwind: "Tailwind Labs",
   disqus: "Disqus",
   liferay: "Liferay",
   workos: "WorkOS",

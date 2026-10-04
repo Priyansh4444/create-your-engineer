@@ -33,7 +33,7 @@ const simple = {
  * has more than one colour (Google, Convex, Figma) which a single-colour icon would flatten.
  */
 const svgl = {
-  google: "Google", convex: "Convex", figma: "Figma", dropbox: "Dropbox", paypal: "PayPal", neovim: "Neovim",
+  google: "Google", convex: "Convex", figma: "Figma", tailwind: "Tailwind CSS", dropbox: "Dropbox", paypal: "PayPal", neovim: "Neovim",
   nodejs: "Node.js", ghostty: "Ghostty", mozilla: "Firefox", trpc: "tRPC", redis: "Redis",
   cloudflare: "Cloudflare", django: "Django", youtube: "YouTube", meta: "Meta",
   microsoft: "Microsoft", openai: "OpenAI", amazon: "Amazon", sourcegraph: "Sourcegraph", twitter: "Twitter",

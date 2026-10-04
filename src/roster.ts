@@ -159,4 +159,5 @@ export const roster: readonly RosterEntry[] = [
   entry("arvsrn", "Aarav Sareen", "arvsrn", "Design engineer", ["anomaly"], ["opencode"]),
   entry("simonklee", "Simon Klee", "simonklee", "OpenCode", ["anomaly"], ["opencode"]),
   entry("dhill", "David Hill", "iamdavidhill", "Design", ["laravel", "anomaly"], ["opencode"]),
+  entry("wathan", "Adam Wathan", "adamwathan", "Founder", ["tailwind"]),
 ];
