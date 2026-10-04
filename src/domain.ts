@@ -135,6 +135,7 @@ export const projectLabels = {
   react: "React",
   nextjs: "Next.js",
   typescript: "TypeScript",
+  trpc: "tRPC",
   solid: "Solid",
   openclaw: "OpenClaw",
   helium: "Helium",

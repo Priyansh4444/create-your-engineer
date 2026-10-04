@@ -57,6 +57,8 @@ export const roster: readonly RosterEntry[] = [
   entry("truell", "Michael Truell", "mntruell", "Founder", ["cursor", "spacex"]),
   entry("roy", "Roy Lee", "im_roy_lee", "Founder", ["cluely"]),
   entry("dara", "Dara A.", "daradoescode", "At T3", ["amazon", "t3"]),
+  entry("julius", "Julius Marminge", "juliusmarminge", "At T3", ["t3"], ["trpc"]),
+  entry("rmarked", "mark", "r_marked", "At T3", ["t3"]),
   entry("mario", "Mario Zechner", "badlogicgames", "Builder", ["libgdx", "earendil"]),
   entry("lee", "Lee Robinson", "leerob", "Vercel", ["vercel"], ["nextjs"]),
   entry("ryandahl", "Ryan Dahl", "rough__sea", "Founder", ["joyent", "deno"], ["nodejs"]),

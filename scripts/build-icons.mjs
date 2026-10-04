@@ -21,7 +21,7 @@ const simple = {
   redis: "Redis", sentry: "Sentry", guardian: "Theguardian", apple: "Apple", brave: "Brave", mozilla: "Mozilla",
   perplexity: "Perplexity", temporal: "Temporal", vite: "Vite", vitest: "Vitest", svelte: "Svelte",
   typescript: "Typescript", neovim: "Neovim", nodejs: "Nodedotjs", django: "Django", flask: "Flask", ghostty: "Ghostty",
-  terraform: "Terraform", react: "React", nextjs: "Nextdotjs", solid: "Solid", effect: "Effect", opencode: "Opencode",
+  terraform: "Terraform", trpc: "Trpc", react: "React", nextjs: "Nextdotjs", solid: "Solid", effect: "Effect", opencode: "Opencode",
   epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github",
 };
 
