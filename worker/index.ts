@@ -1,113 +1,147 @@
-import { categories, parseEngineer, readSeat } from "../src/domain";
+import { initWasm, Resvg } from "@resvg/resvg-wasm";
+import resvgWasm from "@resvg/resvg-wasm/index_bg.wasm";
+import geistRegular from "./fonts/Geist-Regular.ttf";
+import geistSemiBold from "./fonts/Geist-SemiBold.ttf";
+import geistMono from "./fonts/GeistMono-Regular.ttf";
+import { artPaths, OG, ogSvg, type Art, type OgArt } from "./og";
+import { categories, parseEngineer, readSeat, type Engineer } from "../src/domain";
 
 interface Env {
   ASSETS: Fetcher;
-  SHARES: KVNamespace;
 }
 
-/** What X unfurls: a 1200x630 card. Anything else is refused. */
-const WIDTH = 1200;
-const HEIGHT = 630;
-const MAX_BYTES = 700_000;
-const KEEP_SECONDS = 60 * 60 * 24 * 180;
+let ready: Promise<void> | undefined;
+const startRenderer = () => (ready ??= initWasm(resvgWasm));
 
-const PNG = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const mime: Record<string, string> = { webp: "image/webp", svg: "image/svg+xml", png: "image/png" };
 
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(binary);
 }
 
-function escapeHtml(text: string): string {
-  return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+/** A file from the asset folder, as a data URI the rasteriser can read. Undefined if there is none. */
+async function dataUri(env: Env, origin: string, path: string): Promise<string | undefined> {
+  const response = await env.ASSETS.fetch(new Request(new URL(path, origin)));
+  if (!response.ok) return undefined;
+  const type = response.headers.get("content-type")?.split(";")[0] ?? mime[path.split(".").pop() ?? ""];
+  if (!type?.startsWith("image/")) return undefined;
+  return `data:${type};base64,${toBase64(new Uint8Array(await response.arrayBuffer()))}`;
 }
 
-function newId(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(9));
-  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_");
+async function gatherArt(env: Env, origin: string, engineer: Engineer): Promise<OgArt> {
+  const paths = artPaths(engineer);
+  const seats = new Map<string, Art>();
+  await Promise.all(
+    paths.seats.map(async (seat) => {
+      const [portrait, icon] = await Promise.all([
+        dataUri(env, origin, seat.portrait),
+        dataUri(env, origin, seat.mark),
+      ]);
+      seats.set(seat.id, { portrait, mark: icon ?? (await dataUri(env, origin, seat.markFallback)) });
+    }),
+  );
+  const signature = await Promise.all(paths.signature.map((path) => dataUri(env, origin, path)));
+  return { seats, signature };
 }
 
-/** Is this really a PNG of the size we asked for? Checked from its first bytes, not its name. */
-function isShareCard(bytes: Uint8Array): boolean {
-  if (bytes.length < 24 || PNG.some((b, i) => bytes[i] !== b)) return false;
-  const view = new DataView(bytes.buffer, bytes.byteOffset);
-  return view.getUint32(16) === WIDTH && view.getUint32(20) === HEIGHT;
+async function renderCard(env: Env, url: URL): Promise<Uint8Array> {
+  await startRenderer();
+  const engineer = parseEngineer(url.search);
+  const svg = ogSvg(engineer, await gatherArt(env, url.origin, engineer));
+  const resvg = new Resvg(svg, {
+    fitTo: { mode: "width", value: OG.w },
+    font: {
+      fontBuffers: [new Uint8Array(geistRegular), new Uint8Array(geistSemiBold), new Uint8Array(geistMono)],
+      defaultFontFamily: "Geist",
+      loadSystemFonts: false,
+    },
+  });
+  const png = resvg.render().asPng();
+  resvg.free();
+  return png;
 }
 
-/** POST /api/share?c=...&l=...  with the card as the body. Answers with the link to share. */
-async function createShare(request: Request, env: Env, url: URL): Promise<Response> {
-  const origin = request.headers.get("origin");
-  if (origin && origin !== url.origin) return json({ error: "Not from this site." }, 403);
+/** The same engineer always gives the same card, so the query is the cache key, minus noise. */
+function cardKey(url: URL): Request {
+  const engineer = parseEngineer(url.search);
+  const seats = categories.map((c) => readSeat(engineer, c.id)?.id ?? "").join(",");
+  return new Request(`${url.origin}/og.png?v=2&c=${seats}`);
+}
+
+async function ogImage(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  const url = new URL(request.url);
+  const key = cardKey(url);
+  const cache = caches.default;
+  const cached = await cache.match(key);
+  if (cached) return cached;
+  try {
+    const response = new Response(await renderCard(env, url), {
+      headers: {
+        "content-type": "image/png",
+        "cache-control": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400",
+      },
+    });
+    ctx.waitUntil(cache.put(key, response.clone()));
+    return response;
+  } catch (error) {
+    return new Response(`Could not draw the card: ${String(error)}`, { status: 500 });
+  }
+}
+
+/** The app is one static page. Each link to it gets that page with tags naming its own card. */
+async function page(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const response = await env.ASSETS.fetch(request);
+  if (!response.headers.get("content-type")?.includes("text/html")) return response;
 
   const engineer = parseEngineer(url.search);
-  if (!categories.every((c) => readSeat(engineer, c.id))) return json({ error: "Fill all seven seats first." }, 400);
+  const names = [...new Set(categories.flatMap((c) => readSeat(engineer, c.id)?.name ?? []))];
+  const any = names.length > 0;
+  const title = any ? "My engineer" : "Create your engineer";
+  const description = any
+    ? `Built from ${names.join(", ")}.`
+    : "Drag seven people onto seven seats to make one engineer. Humor, taste, judgment, care, nerve, clarity, tempo.";
+  const seats = url.searchParams.get("c");
+  const image = `${url.origin}/og.png${seats ? `?c=${encodeURIComponent(seats).replace(/%3A/g, ":").replace(/%2C/g, ",")}` : ""}`;
+  const tags: [string, string, string][] = [
+    ["property", "og:type", "website"],
+    ["property", "og:site_name", "Create your engineer"],
+    ["property", "og:title", title],
+    ["property", "og:description", description],
+    ["property", "og:url", url.href],
+    ["property", "og:image", image],
+    ["property", "og:image:type", "image/png"],
+    ["property", "og:image:width", String(OG.w)],
+    ["property", "og:image:height", String(OG.h)],
+    ["property", "og:image:alt", `${title}. ${description}`],
+    ["name", "twitter:card", "summary_large_image"],
+    ["name", "twitter:title", title],
+    ["name", "twitter:description", description],
+    ["name", "twitter:image", image],
+  ];
+  const escape = (text: string) => text.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
-  const declared = Number(request.headers.get("content-length") ?? 0);
-  if (declared > MAX_BYTES) return json({ error: "Too large." }, 413);
-  const bytes = new Uint8Array(await request.arrayBuffer());
-  if (bytes.length > MAX_BYTES || !isShareCard(bytes)) return json({ error: "Not a share card." }, 400);
-
-  const id = newId();
-  await Promise.all([
-    env.SHARES.put(`img:${id}`, bytes, { expirationTtl: KEEP_SECONDS }),
-    env.SHARES.put(`search:${id}`, url.search, { expirationTtl: KEEP_SECONDS }),
-  ]);
-  return json({ id, url: `${url.origin}/s/${id}` });
-}
-
-/** GET /s/:id  A page that carries the card in its tags for X, and sends a person on to the result. */
-async function sharePage(id: string, env: Env, url: URL): Promise<Response> {
-  const search = await env.SHARES.get(`search:${id}`);
-  if (search === null) return Response.redirect(`${url.origin}/`, 302);
-
-  const engineer = parseEngineer(search);
-  const names = categories.flatMap((c) => readSeat(engineer, c.id)?.name ?? []);
-  const description = `Built from ${[...new Set(names)].join(", ")}.`;
-  const title = "My engineer";
-  const image = `${url.origin}/i/${id}.png`;
-  const target = `/${search}`;
-
-  const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<title>${escapeHtml(title)} · Create your engineer</title>
-<meta name="description" content="${escapeHtml(description)}">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Create your engineer">
-<meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="${escapeHtml(description)}">
-<meta property="og:url" content="${escapeHtml(url.href)}">
-<meta property="og:image" content="${escapeHtml(image)}">
-<meta property="og:image:width" content="${WIDTH}">
-<meta property="og:image:height" content="${HEIGHT}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${escapeHtml(title)}">
-<meta name="twitter:description" content="${escapeHtml(description)}">
-<meta name="twitter:image" content="${escapeHtml(image)}">
-<meta name="robots" content="noindex">
-<meta http-equiv="refresh" content="0;url=${escapeHtml(target)}">
-</head><body><script>location.replace(${JSON.stringify(target)})</script>
-<a href="${escapeHtml(target)}">See the result</a></body></html>`;
-  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
-}
-
-/** GET /i/:id.png  The card itself. It never changes, so it can be cached for good. */
-async function shareImage(id: string, env: Env): Promise<Response> {
-  const bytes = await env.SHARES.get(`img:${id}`, "arrayBuffer");
-  if (!bytes) return new Response("Not found", { status: 404 });
-  return new Response(bytes, {
-    headers: { "content-type": "image/png", "cache-control": "public, max-age=31536000, immutable" },
-  });
+  return new HTMLRewriter()
+    .on("title", {
+      element(el) {
+        el.setInnerContent(title);
+      },
+    })
+    .on("head", {
+      element(el) {
+        el.append(tags.map(([attr, name, content]) => `<meta ${attr}="${name}" content="${escape(content)}">`).join("\n"), { html: true });
+      },
+    })
+    .transform(response);
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === "/api/share") {
-      return request.method === "POST" ? createShare(request, env, url) : json({ error: "POST only." }, 405);
-    }
-    const page = url.pathname.match(/^\/s\/([\w-]{6,32})$/);
-    if (page) return sharePage(page[1], env, url);
-    const image = url.pathname.match(/^\/i\/([\w-]{6,32})\.png$/);
-    if (image) return shareImage(image[1], env);
+    if (url.pathname === "/og.png") return ogImage(request, env, ctx);
+    if (url.pathname === "/" && request.method === "GET") return page(request, env);
     return env.ASSETS.fetch(request);
   },
 } satisfies ExportedHandler<Env>;

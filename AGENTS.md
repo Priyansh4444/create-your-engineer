@@ -12,7 +12,7 @@ The visitor writes the words. Nothing on a person is a slogan, a quote, or a rea
 
 - **Exhaust the design space.** Filtered gallery, seat composer, and person dossiers were the real options. The seat composer won. A person can still be read whole as a peek.
 - **Model the domain.** The engineer is a partial map from category to person, plus the visitor's own line per filled seat. Focus is one discriminated value. A line cannot exist without its seat.
-- **Experience first.** One screen, one loop: drag a card onto a seat. No accounts, no second product. The only server is the small share worker.
+- **Experience first.** One screen, one loop: drag a card onto a seat. No accounts, no second product. The only server is the small worker that draws the link card.
 - **Seven categories, seven seats.** A pentagram left two seats with nowhere to go. A star of crossing lines then read as random. One circle with a seat every 360/7 degrees, a spoke from each seat to the core, and a ring that fills in is calm and means something: every lit line is a taken seat. The circle is a real circle: geometry is in SVG units that match the stage's shape, never percentages of a stretched box.
 
 ## Domain
@@ -86,7 +86,7 @@ One screen. Desktop and a narrow phone.
    - On touch, a card lifts after a short hold, so a swipe still scrolls the deck.
 6. **The person peek.** Activate a name on any card. It shows their portrait, role, every company in order, their x.com link, and one action: fill only the empty seats. Seats already taken stay.
 7. Escape, or activating the open seat again, returns to idle. Escape inside the filter clears it first.
-8. **Save**, **Copy**, and **Share** draw the filled engineer to a canvas (`src/poster.ts`). They do not clone the DOM. **Share** draws a separate 1200×630 card (`src/share.ts`), posts it to the Worker, and opens X's composer with a link whose page carries that card in its tags, so X shows the picture.
+8. **Save** and **Copy** draw the filled engineer to a canvas (`src/poster.ts`). They do not clone the DOM. **Share** opens X's composer with the current link; the card X shows is drawn on the fly by the Worker (below).
 
 The engineer lives in the query string: `?c=humor:prime,taste:guillermo&l=humor~words`. Unknown ids are dropped, a line without a filled seat is dropped, a partial composition is valid. Update with `history.replaceState`. No router.
 
@@ -112,18 +112,23 @@ Motion is small and mostly SVG. A light runs round the circle once anything is p
 - `src/studio.ts` — all state and every action: focus, taking, swapping, filling, shuffling, saving, copying, sharing, lifting a card. Components read it; they hold no rules.
 - `src/App.tsx` — the page. `src/board.tsx` — the circle, the core, the seats. `src/core.tsx` — the core. `src/deck.tsx` — the filter, the panel, the grid. `src/card.tsx` — the three kinds of card. `src/logos.tsx` — mark images. `src/keys.ts` — keyboard.
 - `src/drag.ts` — pointer drag with magnetic pull. `src/motion.ts` — the card in flight and landing. `src/styles.css` — the visual system, including the board's SVG animation.
-- `src/canvas.ts`, `src/poster.ts`, `src/share.ts` — the saved image and the share card.
-- `worker/index.ts` — the Worker behind Share. `wrangler.jsonc`, `public/_headers` — Cloudflare config.
+- `src/canvas.ts`, `src/poster.ts` — the saved and copied image.
+- `worker/index.ts` — the Worker (page tags, `/og.png`). `worker/og.ts` — the card's SVG. `worker/fonts/` — Geist, for the card (SIL OFL). `wrangler.jsonc`, `public/_headers` — Cloudflare config.
 - `scripts/build-icons.mjs`, `scripts/fetch-faces.mjs` — marks and portraits.
 - `src/main.tsx` stays the Solid entry. Stack stays Solid, Vite, TypeScript. Effect is a dependency; use it only if it removes a real branch.
 
-## Share on X
+## The link card (OG image)
 
-X shows a large image for a link whose page names one in its `og:image` and `twitter:card` tags. The app is static, so a Worker (`worker/index.ts`) does three things and runs only for these routes: `POST /api/share` takes the 1200×630 card, checks it is a PNG of that size and that all seven seats are filled, and keeps it in KV under a random id for 180 days; `GET /s/:id` serves a page with the tags, which sends a person on to the result; `GET /i/:id.png` serves the card. If the upload fails the button still opens X with the plain link.
+Every link to the app unfurls with a 1200×630 card drawn for exactly what is in the link, with no upload and no storage. `worker/index.ts` runs only for `/` and `/og.png`:
+
+- `GET /og.png?c=humor:addy,...` builds an SVG (`worker/og.ts`) and rasterises it with resvg-wasm and Geist. It shows the circle with the chosen portraits, their marks and names, the core growing with the seats, a headline ("Create your engineer" when empty, "My engineer" and "Built from …" otherwise), and a footer that is always there: the Helium and imput marks and `imput.net`. The result is cached per set of seats (Cache API, a week at the edge, a day in browsers). Bump `v=` in `cardKey` when the design changes.
+- `GET /` serves the app's page with `og:` and `twitter:` tags added by HTMLRewriter, naming that link's card, so `?c=…` links unfurl as the person's own engineer.
+- Resvg cannot read WebP, so the card uses 176px JPEG copies of the portraits (`public/faces/<id>.jpg`, made by `scripts/fetch-faces.mjs`).
+- The Share button just opens `x.com/intent/post` with the link. Nothing is posted anywhere first.
 
 ## Deploy
 
-Cloudflare Workers with static assets and a KV namespace bound as `SHARES`. `bun run deploy` builds and runs `wrangler deploy` against the `create-your-engineer` Worker. Hashed assets are cached for a year; faces, icons, and logos for a day with revalidation.
+Cloudflare Workers with static assets. No KV or other bindings. `bun run deploy` builds and runs `wrangler deploy` against the `create-your-engineer` Worker. Hashed assets are cached for a year; faces, icons, and logos for a day with revalidation.
 
 ## Source
 
@@ -133,8 +138,8 @@ https://github.com/Priyansh4444/create-your-engineer. Portraits are other people
 
 - `bun run typecheck`
 - `bun run build`
-- In a browser, at 1440 and 390 wide: drag a card onto a seat, click-take, open a seat and write a line, swap two seats, open a person and fill empty seats without clobbering, shuffle, load a shared `?c=` URL, clear a seat, keyboard only, reduced motion, Save, Copy, and Share at 7 / 7, touch hold-and-drag on the sheet. Confirm every seat is the same distance from the core and 360/7 degrees from its neighbours, no seat cards overlap, every seat is on screen, and the page does not scroll sideways.
+- In a browser, at 1440 and 390 wide: drag a card onto a seat, click-take, open a seat and write a line, swap two seats, open a person and fill empty seats without clobbering, shuffle, load a shared `?c=` URL, clear a seat, keyboard only, reduced motion, Save, Copy, and Share at 7 / 7, `curl` `/og.png` empty, partial, and full, touch hold-and-drag on the sheet. Confirm every seat is the same distance from the core and 360/7 degrees from its neighbours, no seat cards overlap, every seat is on screen, and the page does not scroll sideways.
 
 ## Out of scope
 
-Accounts, auth, any backend beyond the share worker, analytics, more categories, quotes or lines written for people, and restoring the old catalog, the pentagram, the heptagram, or the house layout.
+Accounts, auth, any backend beyond the card worker, analytics, more categories, quotes or lines written for people, and restoring the old catalog, the pentagram, the heptagram, or the house layout.

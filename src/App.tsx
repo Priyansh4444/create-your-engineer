@@ -48,9 +48,9 @@ export default function App() {
           <Show when={studio.complete()} fallback={<p>Drag a person onto each seat.</p>}>
             <p class="msg">All seven seats, one engineer.</p>
             <div class="acts">
-              <button type="button" class="pill solid share" disabled={Boolean(studio.busy())} onClick={() => void studio.share()}>
+              <button type="button" class="pill solid share" onClick={studio.share}>
                 <img src="/icons/x.svg" alt="" width="12" height="12" />
-                {studio.busy() === "sharing" ? "Sharing" : "Share"}
+                Share
               </button>
               <Show when={canCopy}>
                 <button type="button" class="pill" disabled={Boolean(studio.busy())} onClick={() => void studio.copy()}>

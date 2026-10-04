@@ -5,3 +5,4 @@ dist/
 
 # Portraits are other people's avatars. Fetch them with: node scripts/fetch-faces.mjs
 public/faces/*.webp
+public/faces/*.jpg

@@ -1,6 +1,6 @@
 # Create your engineer
 
-Compose one engineer from seven people. Drag a person onto each of seven seats on a circle: humor, taste, judgment, care, nerve, clarity, tempo. Write your own line for each seat, then copy, save, or share the result on X.
+Compose one engineer from seven people. Drag a person onto each of seven seats on a circle: humor, taste, judgment, care, nerve, clarity, tempo. Write your own line for each seat, then copy, save, or share the result on X, where the link unfurls with a card drawn for your engineer.
 
 **Live:** https://create-your-engineer.pronsh.workers.dev
 
@@ -20,7 +20,7 @@ bun run dev
 
 - **App:** SolidJS, Vite, TypeScript. Motion is anime.js for the cards and SVG for the board.
 - **Marks:** `node scripts/build-icons.mjs` builds the compact company and project icons from simple-icons and svgl.
-- **Share on X:** a small Cloudflare Worker (`worker/index.ts`) stores a 1200×630 card in KV and serves a page with the tags X unfurls into a large image. Everything else is static assets.
+- **Link card:** a small Cloudflare Worker (`worker/index.ts`) draws a 1200×630 card on the fly for any link (`/og.png?c=…`) with resvg-wasm, and adds the tags that make X, Slack and Discord show it. Everything else is static assets.
 
 ## Deploy
 
@@ -28,7 +28,7 @@ bun run dev
 bun run deploy
 ```
 
-Builds and publishes to Cloudflare Workers (`wrangler.jsonc`). It needs `wrangler login` once and a KV namespace bound as `SHARES`.
+Builds and publishes to Cloudflare Workers (`wrangler.jsonc`). It needs `wrangler login` once.
 
 ## Notes
 

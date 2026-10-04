@@ -23,7 +23,6 @@ import {
 import { beginDrag, type DragSource } from "./drag";
 import { flyCard, playArrive } from "./motion";
 import { posterBlob, savePoster } from "./poster";
-import { shareBlob } from "./share";
 
 /**
  * Everything the screen knows and every way it can change, in one place.
@@ -36,7 +35,7 @@ export function createStudio() {
   const [query, setQuery] = createSignal("");
   const [magnet, setMagnet] = createSignal<CategoryId | null>(null);
   const [lifted, setLifted] = createSignal<{ person?: string; seat?: CategoryId }>({});
-  const [busy, setBusy] = createSignal<"" | "saving" | "copying" | "sharing">("");
+  const [busy, setBusy] = createSignal<"" | "saving" | "copying">("");
   const [note, setNote] = createSignal("");
 
   let stage: HTMLElement | undefined;
@@ -194,7 +193,7 @@ export function createStudio() {
   }
 
   /** Runs a button's work, shows what it is doing, and says so if it fails. */
-  async function work(kind: "saving" | "copying" | "sharing", job: () => Promise<string | void>, failure: string) {
+  async function work(kind: "saving" | "copying", job: () => Promise<string | void>, failure: string) {
     if (!complete() || busy()) return;
     setBusy(kind);
     try {
@@ -226,39 +225,16 @@ export function createStudio() {
     );
 
   /**
-   * Share on X with the picture on the card. The page uploads a card-sized image and gets back a
-   * link whose preview X unfurls; if there is nowhere to upload, it shares the plain link.
+   * Share on X. The link carries the whole engineer, and the page behind it names a card drawn on
+   * the fly for exactly that engineer, so X shows the picture without anything being uploaded.
    */
-  const share = () => {
-    // Opened now, in the click, so a popup blocker lets it through; pointed at X once the card is ready.
-    const win = window.open("about:blank", "_blank");
-    let opened = false;
-    return work(
-      "sharing",
-      async () => {
-        const names = categories.flatMap((c) => readSeat(engineer(), c.id)?.name ?? []);
-        const text = `I built an engineer from seven people: ${[...new Set(names)].join(", ")}.`;
-        let link = window.location.href;
-        try {
-          const response = await fetch(`/api/share?${serializeEngineer(engineer())}`, {
-            method: "POST",
-            headers: { "content-type": "image/png" },
-            body: await shareBlob(engineer()),
-          });
-          if (response.ok) link = ((await response.json()) as { url: string }).url;
-        } catch {
-          /* share the plain link */
-        }
-        const intent = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(link)}`;
-        opened = true;
-        if (win) win.location.href = intent;
-        else window.location.href = intent;
-      },
-      "Could not open X.",
-    ).finally(() => {
-      if (!opened) win?.close();
-    });
-  };
+  function share() {
+    if (!complete()) return;
+    const names = categories.flatMap((c) => readSeat(engineer(), c.id)?.name ?? []);
+    const text = `I built an engineer from seven people: ${[...new Set(names)].join(", ")}.`;
+    const intent = `https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+    window.open(intent, "_blank", "noopener,noreferrer");
+  }
 
   /* ---------- dragging ---------- */
 

@@ -6,7 +6,7 @@
 - Motion is SVG and minimal. A light runs round the circle once anything is placed, a second joins at seven, lines draw themselves in, and two rings cross the circle from the core at seven. The sparks, confetti, flashes, tilting cards, and entrance animations are gone.
 - The middle is a ring of seven arcs around an orb that grows as seats fill.
 - Marks are the smallest form of each logo: 79 icons built by `scripts/build-icons.mjs`, using the logos' own published files where they keep real colours (Google, Convex, Figma, Dropbox, PayPal, Neovim, Node.js, Ghostty, Firefox, tRPC, Redis, Cloudflare, Django, YouTube, Meta), with the real lockup as a fallback and the plain name after that. People also carry what they work on (Vue, Vite and Oxc for Evan You; OpenCode and Effect for Kit; Helium and Cobalt for wukko).
-- Share on X: a Worker and a KV store keep a 1200×630 card and serve the tags X unfurls into a large image. Copy puts the image on the clipboard. A GitHub link is in the header.
+- Link card: the Worker draws a 1200×630 OG image on the fly for any link, and tags every page with it, so a shared `?c=` link unfurls as that engineer. Always on it: the Helium and imput marks and `imput.net`. This replaced the upload-and-store path; the KV namespace is deleted. Copy puts the image on the clipboard. A GitHub link is in the header.
 - Shuffle: a button beside the filter gives the deck a new random order.
 - Everyone has a mark. Added the real logos for The Pragmatic Engineer, Molly Rocket, CrunchLabs, Discovery Loop, AngelList, Block, imput, tldraw, Helium, and Cobalt. Where a company has no published logo at all (Thinking Machines, Safe Superintelligence, Keen, Compose, and Independent), the card shows the X mark.
 - 115 people. Added Tibo, Thariq, Andrew Ambrosino, Dan Abramov, David Cramer, and the Abstract (Convex, 2 September 2026) speakers whose X handles could be confirmed: James Cowling, Zeno Rocha, John Maeda, Paul Bakaus, Josh Puckett, and Seth Raphael (@magicseth). Boris Cherny, Jamie Turner, and Theo were already in.
@@ -17,6 +17,7 @@
 ## Left
 
 - X bios could not be read for most of the roster: X blocks anonymous access and the syndication endpoint rate limits after a handful of requests. The checked ones are above; the rest are best effort as of 2026-10-03. Micky's bio reads "Developer, Youtuber, and a16z scout" and does not mention Convex; the Convex role is as the user stated.
+- The first uncached card takes about a second (the Worker reads the files and starts resvg); one cold request returned a 503 once in testing and worked on retry. Cards are cached after that.
 - Julius Marminge's X bio could not be read, so his T3 role and the tRPC link come from the request and his open-source work; his portrait is his GitHub avatar. @r_marked's bio reads "software should feel good to use".
 - Not re-verified: Ethan Niser, Dara, Lauren Tan, Jhey Tompkins, Matt Pocock, Rhys Sullivan's YC chapter.
 - Marks: Thinking Machines, Safe Superintelligence, Keen, Compose, Boot.dev, Bump, PartyKit, Anomaly, AI Hero, and id have no published logo, so they show their name in the peek and the card falls back to the X mark. The Pragmatic Engineer's and Molly Rocket's logos are published only as raster images, wrapped as they are.

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Fetches the portraits the roster needs into public/faces/ (320px square WebP).
+ * Fetches the portraits the roster needs into public/faces/: a 320px square WebP for the app and a
+ * 176px JPEG for the link card (the card's rasteriser cannot read WebP).
  *
  * The portraits are other people's public avatars, so they are not kept in this repository.
  * Run this once after cloning:  node scripts/fetch-faces.mjs
@@ -26,16 +27,18 @@ async function download(handle) {
 let fetched = 0;
 for (const person of roster) {
   const target = `public/faces/${person.id}.webp`;
-  if (existsSync(target)) continue;
+  const card = `public/faces/${person.id}.jpg`;
+  if (existsSync(target) && existsSync(card)) continue;
   try {
     const raw = `public/faces/${person.id}.src`;
-    await writeFile(raw, await download(person.handle));
-    execFileSync("ffmpeg", [
+    if (!existsSync(target)) await writeFile(raw, await download(person.handle));
+    if (!existsSync(target)) execFileSync("ffmpeg", [
       "-loglevel", "error", "-y", "-i", raw,
       "-vf", "crop='min(iw,ih)':'min(iw,ih)':'(iw-min(iw,ih))/2':'(ih-min(iw,ih))*0.12',scale=320:320",
       "-c:v", "libwebp", "-quality", "80", target,
     ]);
-    await rm(raw);
+    execFileSync("ffmpeg", ["-loglevel", "error", "-y", "-i", target, "-vf", "scale=176:176", "-q:v", "4", card]);
+    await rm(raw, { force: true });
     fetched += 1;
     console.log("fetched", person.id);
     await new Promise((resolve) => setTimeout(resolve, 1500));
