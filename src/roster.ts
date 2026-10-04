@@ -167,5 +167,4 @@ export const roster: readonly RosterEntry[] = [
   entry("quinn", "Quinn Slack", "sqs", "Founder", ["sourcegraph", "amp"]),
   entry("beyang", "Beyang Liu", "beyang", "Founder", ["sourcegraph", "amp"]),
   entry("tim", "Tim Lucas", "toolmantim", "Designer", ["buildkite", "sourcegraph", "amp"]),
-  entry("shivam", "Shivam Patel", "shivamp", "Founder", ["ramp"]),
 ];

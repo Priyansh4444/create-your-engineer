@@ -123,7 +123,6 @@ const raster = {
   pragmatic: { url: "https://www.pragmaticengineer.com/assets/logo_large.png", size: 128 },
   molly: { url: "https://mollyrocket.com/r/molly_logo_80ab5040d770d5c7.png", size: 160 },
   executor: { url: "https://executor.sh/favicon-192.png", size: 128 },
-  ramp: { url: "https://ramp.com/apple-touch-icon.png", size: 128 },
 };
 for (const [id, { url, size }] of Object.entries(raster)) {
   const res = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });
