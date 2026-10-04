@@ -45,7 +45,7 @@ export const roster: readonly RosterEntry[] = [
   entry("dax", "Dax", "thdxr", "OpenCode", ["sst", "anomaly"], ["opencode"]),
   entry("ethan", "Ethan Niser", "ethanniser", "On his own", ["vercel"]),
   entry("evan", "Evan Bacon", "Baconbrix", "SpaceXAI", ["expo", "spacex"]),
-  entry("rhys", "Rhys Sullivan", "RhysSullivan", "Founder", ["vercel", "ycombinator"]),
+  entry("rhys", "Rhys Sullivan", "RhysSullivan", "Founder", ["vercel", "ycombinator", "executor"]),
 
   entry("poteto", "Lauren Tan", "poteto", "SpaceXAI", ["netflix", "meta", "cursor", "spacex"], ["react"]),
   entry("matt", "Matt Pocock", "mattpocockuk", "Teacher", ["vercel", "aihero"], ["typescript"]),
@@ -160,4 +160,12 @@ export const roster: readonly RosterEntry[] = [
   entry("simonklee", "Simon Klee", "simonklee", "OpenCode", ["anomaly"], ["opencode"]),
   entry("dhill", "David Hill", "iamdavidhill", "Design", ["laravel", "anomaly"], ["opencode"]),
   entry("wathan", "Adam Wathan", "adamwathan", "Founder", ["tailwind"]),
+
+  entry("pcstyle", "Adam Krupa", "pcstyle53", "Builder", ["indie"]),
+  entry("hollick", "Dan Hollick", "DanHollick", "Design engineer", ["raycast", "tailwind", "cursor"]),
+  entry("thorsten", "Thorsten Ball", "thorstenball", "Co-founder", ["sourcegraph", "zed", "amp"]),
+  entry("quinn", "Quinn Slack", "sqs", "Founder", ["sourcegraph", "amp"]),
+  entry("beyang", "Beyang Liu", "beyang", "Founder", ["sourcegraph", "amp"]),
+  entry("tim", "Tim Lucas", "toolmantim", "Designer", ["buildkite", "sourcegraph", "amp"]),
+  entry("shivam", "Shivam Patel", "shivamp", "Founder", ["ramp"]),
 ];

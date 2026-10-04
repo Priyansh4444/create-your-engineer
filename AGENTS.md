@@ -121,7 +121,7 @@ Motion is small and mostly SVG. A light runs round the circle once anything is p
 
 Every link to the app unfurls with a 1200×630 card drawn for exactly what is in the link, with no upload and no storage. `worker/index.ts` runs only for `/` and `/og.png`:
 
-- `GET /og.png?c=humor:addy,...` builds an SVG (`worker/og.ts`) and rasterises it with resvg-wasm and Geist. It shows the circle with the chosen portraits, their marks and names, the core growing with the seats, a headline ("Create your engineer" when empty, "My engineer" and "Built from …" otherwise), and a footer that is always there: the Helium and imput marks and `imput.net`. The result is cached per set of seats (Cache API, a week at the edge, a day in browsers). Bump `v=` in `cardKey` when the design changes.
+- `GET /og.png?c=humor:addy,...` builds an SVG (`worker/og.ts`) and rasterises it with resvg-wasm and Geist. It shows the circle with the chosen portraits, their marks and names, the core growing with the seats, a headline ("Create your engineer" when empty, "My engineer" and "Built from …" otherwise), and the site's address at the foot. Nothing on the card suggests an affiliation: no logos other than people's own company marks beside their faces. The result is cached per set of seats (Cache API, a week at the edge, a day in browsers). Bump `v=` in `cardKey` when the design changes.
 - `GET /` serves the app's page with `og:` and `twitter:` tags added by HTMLRewriter, naming that link's card, so `?c=…` links unfurl as the person's own engineer.
 - Resvg cannot read WebP, so the card uses 176px JPEG copies of the portraits (`public/faces/<id>.jpg`, made by `scripts/fetch-faces.mjs`).
 - The Share button just opens `x.com/intent/post` with the link. Nothing is posted anywhere first.

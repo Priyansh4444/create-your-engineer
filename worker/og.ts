@@ -4,14 +4,10 @@ import { markOf } from "../src/marks";
 /** The size X, Slack, Discord and iMessage show a large link card at: 1.91 to 1. */
 export const OG = { w: 1200, h: 630 } as const;
 
-/** Marks that are always on the card, whatever was chosen. */
-const SIGNATURE = ["helium", "imput"] as const;
-const SIGNATURE_TEXT = "imput.net";
-
 const CIRCLE = { cx: 838, cy: 322, R: 206, face: 44 };
 
 export type Art = { portrait?: string; mark?: string };
-export type OgArt = { seats: Map<string, Art>; signature: (string | undefined)[] };
+export type OgArt = { seats: Map<string, Art> };
 
 /** What the card needs from the asset folder: which files, as paths. */
 export function artPaths(engineer: Engineer) {
@@ -21,7 +17,7 @@ export function artPaths(engineer: Engineer) {
     const mark = markOf(person);
     return [{ id: person.id, portrait: `/faces/${person.id}.jpg`, mark: `/icons/${mark}.svg`, markFallback: `/logos/${mark}.svg` }];
   });
-  return { seats, signature: SIGNATURE.map((id) => `/icons/${id}.svg`) };
+  return { seats };
 }
 
 function esc(text: string): string {
@@ -65,7 +61,7 @@ function arcPath(radius: number, from: number, to: number): string {
 }
 
 /** The card, as an SVG string. Fonts are looked up by family name, so the rasteriser must load Geist. */
-export function ogSvg(engineer: Engineer, art: OgArt): string {
+export function ogSvg(engineer: Engineer, art: OgArt, host: string): string {
   const filled = categories.map((category) => readSeat(engineer, category.id));
   const count = filled.filter(Boolean).length;
   const names = [...new Set(filled.flatMap((person) => person?.name ?? []))];
@@ -150,16 +146,8 @@ export function ogSvg(engineer: Engineer, art: OgArt): string {
     add(`<text x="64" y="${top + i * 36}" font-family="Geist" font-size="26" fill="#a8a8a8">${esc(line)}</text>`);
   });
 
-  // The signature: always on the card.
-  const footY = 560;
-  let x = 64;
-  art.signature.forEach((uri) => {
-    if (!uri) return;
-    add(`<rect x="${x}" y="${footY - 8}" width="42" height="42" rx="11" fill="#fff" fill-opacity="0.07" stroke="#fff" stroke-opacity="0.14"/>`);
-    add(`<image x="${x + 7}" y="${footY - 1}" width="28" height="28" preserveAspectRatio="xMidYMid meet" xlink:href="${uri}"/>`);
-    x += 52;
-  });
-  add(`<text x="${x + 6}" y="${footY + 20}" font-family="Geist Mono" font-size="20" letter-spacing="0.4" fill="#fff" fill-opacity="0.7">${esc(SIGNATURE_TEXT)}</text>`);
+  // The only thing at the foot of the card is the address it came from.
+  add(`<text x="64" y="580" font-family="Geist Mono" font-size="18" letter-spacing="0.4" fill="#fff" fill-opacity="0.45">${esc(host)}</text>`);
 
   add(`</svg>`);
   return out.join("\n");

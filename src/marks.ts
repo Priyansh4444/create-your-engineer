@@ -6,6 +6,7 @@ import { iconIds } from "./icons.generated";
  * plain text, never an abbreviation drawn to look like a mark.
  */
 const lockups = new Set<string>(["a16z", "aiengineer", "amazon", "anduril", "angellist", "cluely", "crunchlabs", "epic", "eventbrite", "joyent", "libgdx"]);
+const markAssetVersion = 3;
 
 /** The smallest form of a logo, when there is one: `public/icons/`. Preferred everywhere. */
 export function isIcon(id: MarkId): boolean {
@@ -17,7 +18,8 @@ export function hasMark(id: MarkId): boolean {
 }
 
 export function markSrc(id: MarkId): string {
-  return isIcon(id) ? `/icons/${id}.svg` : `/logos/${id}.svg`;
+  const path = isIcon(id) ? `/icons/${id}.svg` : `/logos/${id}.svg`;
+  return `${path}?v=${markAssetVersion}`;
 }
 
 /**

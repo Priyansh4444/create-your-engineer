@@ -123,6 +123,12 @@ export const companyLabels = {
   discoveryloop: "Discovery Loop",
   deepmind: "DeepMind",
   epicgames: "Epic Games",
+  executor: "Executor",
+  amp: "Amp",
+  buildkite: "Buildkite",
+  zed: "Zed",
+  raycast: "Raycast",
+  ramp: "Ramp",
 } as const;
 
 /** What a person works on: the projects and products, not the employer. */

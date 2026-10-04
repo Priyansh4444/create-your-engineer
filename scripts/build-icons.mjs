@@ -24,7 +24,7 @@ const simple = {
   perplexity: "Perplexity", temporal: "Temporal", vite: "Vite", vitest: "Vitest", svelte: "Svelte",
   typescript: "Typescript", neovim: "Neovim", nodejs: "Nodedotjs", django: "Django", flask: "Flask", ghostty: "Ghostty",
   terraform: "Terraform", trpc: "Trpc", react: "React", nextjs: "Nextdotjs", solid: "Solid", effect: "Effect", opencode: "Opencode",
-  epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github", bluesky: "Bluesky", resend: "Resend", laravel: "Laravel", tldraw: "Tldraw", helium: "Helium", cobalt: "Cobalt",
+  epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github", bluesky: "Bluesky", resend: "Resend", laravel: "Laravel", tldraw: "Tldraw", helium: "Helium", cobalt: "Cobalt", buildkite: "Buildkite",
 };
 
 /**
@@ -39,6 +39,7 @@ const svgl = {
   microsoft: "Microsoft", openai: "OpenAI", amazon: "Amazon", sourcegraph: "Sourcegraph", twitter: "Twitter",
   eventbrite: "Eventbrite", vue: "Vue", openclaw: "OpenClaw", oxc: "Oxc", rolldown: "Rolldown", xai: "xAI",
   coinbase: "Coinbase", cluely: "Cluely", anduril: "Anduril", joyent: "Joyent", libgdx: "libGDX",
+  raycast: "Raycast", zed: "Zed",
 };
 
 /** Symbols with no published icon, kept in scripts/sources/ and copied as they are. */
@@ -82,6 +83,7 @@ for (const [id, title] of Object.entries(svgl)) {
 const published = {
   discoveryloop: { url: "https://www.discoveryloop.com/assets/favicon.svg" },
   crunchlabs: { url: "https://www.crunchlabs.com/cdn/shop/files/CL_Logo_Single_Line_1.svg", dir: "logos", ink: ["#00416c"] },
+  amp: { url: "https://ampcode.com/app-icon.svg?v=4" },
 };
 for (const [id, { url, dir = "icons", ink: dark = [] }] of Object.entries(published)) {
   const res = await fetch(url);
@@ -106,7 +108,9 @@ for (const [id, { url, index, dir = "icons" }] of Object.entries(inline)) {
     .replace(/\sclass="[^"]*"/g, "")
     .replace(/currentColor/g, "#ededed")
     .replace(/width="100%"\s+height="100%"/, "")
-    .replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"');
+    .replace(/<svg\b[^>]*>/, (root) =>
+      /\sxmlns=/.test(root) ? root : root.replace("<svg", '<svg xmlns="http://www.w3.org/2000/svg"'),
+    );
   await writeFile(`public/${dir}/${id}.svg`, svg);
   if (dir === "icons") made.push(id);
 }
@@ -118,6 +122,8 @@ for (const [id, { url, index, dir = "icons" }] of Object.entries(inline)) {
 const raster = {
   pragmatic: { url: "https://www.pragmaticengineer.com/assets/logo_large.png", size: 128 },
   molly: { url: "https://mollyrocket.com/r/molly_logo_80ab5040d770d5c7.png", size: 160 },
+  executor: { url: "https://executor.sh/favicon-192.png", size: 128 },
+  ramp: { url: "https://ramp.com/apple-touch-icon.png", size: 128 },
 };
 for (const [id, { url, size }] of Object.entries(raster)) {
   const res = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });

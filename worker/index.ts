@@ -14,6 +14,7 @@ let ready: Promise<void> | undefined;
 const startRenderer = () => (ready ??= initWasm(resvgWasm));
 
 const mime: Record<string, string> = { webp: "image/webp", svg: "image/svg+xml", png: "image/png" };
+const CARD_VERSION = 5;
 
 function toBase64(bytes: Uint8Array): string {
   let binary = "";
@@ -42,14 +43,13 @@ async function gatherArt(env: Env, origin: string, engineer: Engineer): Promise<
       seats.set(seat.id, { portrait, mark: icon ?? (await dataUri(env, origin, seat.markFallback)) });
     }),
   );
-  const signature = await Promise.all(paths.signature.map((path) => dataUri(env, origin, path)));
-  return { seats, signature };
+  return { seats };
 }
 
 async function renderCard(env: Env, url: URL): Promise<Uint8Array> {
   await startRenderer();
   const engineer = parseEngineer(url.search);
-  const svg = ogSvg(engineer, await gatherArt(env, url.origin, engineer));
+  const svg = ogSvg(engineer, await gatherArt(env, url.origin, engineer), url.host);
   const resvg = new Resvg(svg, {
     fitTo: { mode: "width", value: OG.w },
     font: {
@@ -67,7 +67,7 @@ async function renderCard(env: Env, url: URL): Promise<Uint8Array> {
 function cardKey(url: URL): Request {
   const engineer = parseEngineer(url.search);
   const seats = categories.map((c) => readSeat(engineer, c.id)?.id ?? "").join(",");
-  return new Request(`${url.origin}/og.png?v=2&c=${seats}`);
+  return new Request(`${url.origin}/og.png?v=${CARD_VERSION}&c=${seats}`);
 }
 
 async function ogImage(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -104,7 +104,7 @@ async function page(request: Request, env: Env): Promise<Response> {
     ? `Built from ${names.join(", ")}.`
     : "Drag seven people onto seven seats to make one engineer. Humor, taste, judgment, care, nerve, clarity, tempo.";
   const seats = url.searchParams.get("c");
-  const image = `${url.origin}/og.png${seats ? `?c=${encodeURIComponent(seats).replace(/%3A/g, ":").replace(/%2C/g, ",")}` : ""}`;
+  const image = `${url.origin}/og.png?v=${CARD_VERSION}${seats ? `&c=${encodeURIComponent(seats).replace(/%3A/g, ":").replace(/%2C/g, ",")}` : ""}`;
   const tags: [string, string, string][] = [
     ["property", "og:type", "website"],
     ["property", "og:site_name", "Create your engineer"],
