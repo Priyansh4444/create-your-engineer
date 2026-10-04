@@ -128,6 +128,7 @@ export const companyLabels = {
   buildkite: "Buildkite",
   zed: "Zed",
   raycast: "Raycast",
+  github: "GitHub",
 } as const;
 
 /** What a person works on: the projects and products, not the employer. */
