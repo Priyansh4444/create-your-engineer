@@ -5,7 +5,7 @@ import { iconIds } from "./icons.generated";
  * Marks with a real lockup (a wordmark) in `public/logos/`. Anything else renders its name as
  * plain text, never an abbreviation drawn to look like a mark.
  */
-const lockups = new Set<string>(["angellist", "crunchlabs", 'a16z', 'aiengineer', 'airbnb', 'amazon', 'anduril', 'anthropic', 'apple', 'baidu', 'basecamp', 'brave', 'bun', 'cloudflare', 'cluely', 'coinbase', 'convex', 'cursor', 'databricks', 'deno', 'django', 'dropbox', 'earendil', 'effect', 'epic', 'eventbrite', 'expo', 'figma', 'flask', 'ghostty', 'google', 'guardian', 'joyent', 'libgdx', 'linear', 'meta', 'microsoft', 'million', 'mit', 'mozilla', 'neon', 'neovim', 'netflix', 'netlify', 'nextjs', 'nodejs', 'nvidia', 'nytimes', 'openai', 'openclaw', 'opencode', 'oxc', 'paypal', 'perplexity', 'planetscale', 'react', 'redis', 'remix', 'replit', 'rolldown', 'sentry', 'shopify', 'solid', 'sourcegraph', 'spacex', 'sst', 'stripe', 'svelte', 't3', 'tanstack', 'temporal', 'terraform', 'tesla', 'twitch', 'twitter', 'typescript', 'uber', 'vercel', 'vite', 'vitest', 'voidzero', 'vue', 'x', 'xai', 'ycombinator', 'youtube']);
+const lockups = new Set<string>(["a16z", "aiengineer", "amazon", "anduril", "angellist", "cluely", "crunchlabs", "epic", "eventbrite", "joyent", "libgdx"]);
 
 /** The smallest form of a logo, when there is one: `public/icons/`. Preferred everywhere. */
 export function isIcon(id: MarkId): boolean {

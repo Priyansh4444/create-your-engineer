@@ -4,8 +4,8 @@
  * of which ids have one. Run: node scripts/build-icons.mjs
  *
  * An icon is the real logo file from svgl.app where that is the better one, otherwise a
- * simple-icons glyph in the brand colour, otherwise an existing symbol-only file in
- * public/logos/. Anything left over falls back to its lockup.
+ * simple-icons glyph in the brand colour, otherwise a symbol kept in scripts/sources/.
+ * Anything left over falls back to a lockup in public/logos/, or to the plain name.
  */
 import * as si from "simple-icons";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
@@ -41,7 +41,7 @@ const svgl = {
   coinbase: "Coinbase", cluely: "Cluely", anduril: "Anduril", joyent: "Joyent", libgdx: "libGDX",
 };
 
-/** Files in public/logos that are already a symbol on their own. */
+/** Symbols with no published icon, kept in scripts/sources/ and copied as they are. */
 const existing = ["t3", "nytimes", "earendil", "million", "voidzero", "mit"];
 
 /** Dark brand colours vanish on black, so they become the page's off-white. */
@@ -134,8 +134,8 @@ for (const [id, { url, size }] of Object.entries(raster)) {
 }
 
 for (const id of existing) {
-  if (!existsSync(`public/logos/${id}.svg`)) continue;
-  await copyFile(`public/logos/${id}.svg`, `public/icons/${id}.svg`);
+  if (!existsSync(`scripts/sources/${id}.svg`)) continue;
+  await copyFile(`scripts/sources/${id}.svg`, `public/icons/${id}.svg`);
   made.push(id);
 }
 

@@ -66,7 +66,7 @@ To add a person: a verified handle, a real portrait at `public/faces/<id>.webp` 
 
 ## Marks
 
-The smallest form of a logo, wherever there is one: an icon in `public/icons/<id>.svg`, built by `scripts/build-icons.mjs`. Prefer the real logo file as published online (svgl.app), unmodified, so it keeps its real colours; Google, Convex, and Figma are the cases that matter, because a single-colour glyph flattens them. Where svgl has nothing better, a simple-icons glyph in the brand colour; failing that, an existing symbol. Where no icon exists the real lockup in `public/logos/<id>.svg` stands in, and where there is neither the plain name shows. Never an abbreviation drawn to look like a mark, a hotlinked file, or a made-up brand. Dark brand colours become off-white so they read on black.
+The smallest form of a logo, wherever there is one: an icon in `public/icons/<id>.svg`, built by `scripts/build-icons.mjs`. Prefer the real logo file as published online (svgl.app), unmodified, so it keeps its real colours; Google, Convex, and Figma are the cases that matter, because a single-colour glyph flattens them. Where svgl has nothing better, a simple-icons glyph in the brand colour; failing that, an existing symbol. Where no icon exists the real lockup in `public/logos/<id>.svg` stands in (only those lockups with no icon are kept there), and where there is neither the plain name shows. Never an abbreviation drawn to look like a mark, a hotlinked file, or a made-up brand. Dark brand colours become off-white so they read on black.
 
 A mark can be a company or a project (`projects` on a person: Vue, Vite and Oxc for Evan You, OpenCode and Effect for Kit). A card shows one mark: the current company if it has one, else the first project that does, else the X mark, because everyone here is on X and nobody's card is bare. Never an earlier employer. Logos that exist only as a raster are wrapped in an SVG as published, resized and never redrawn. On a card the mark sits on a small dark plate, larger in the deck, where you choose, and small on a seat. The person peek lists the companies in order and, under "Works on", the projects. `src/marks.ts` holds the sets of ids that have an icon or a lockup.
 
@@ -114,7 +114,7 @@ Motion is small and mostly SVG. A light runs round the circle once anything is p
 - `src/drag.ts` — pointer drag with magnetic pull. `src/motion.ts` — the card in flight and landing. `src/styles.css` — the visual system, including the board's SVG animation.
 - `src/canvas.ts`, `src/poster.ts` — the saved and copied image.
 - `worker/index.ts` — the Worker (page tags, `/og.png`). `worker/og.ts` — the card's SVG. `worker/fonts/` — Geist, for the card (SIL OFL). `wrangler.jsonc`, `public/_headers` — Cloudflare config.
-- `scripts/build-icons.mjs`, `scripts/fetch-faces.mjs` — marks and portraits.
+- `scripts/build-icons.mjs`, `scripts/fetch-faces.mjs` — marks and portraits. `scripts/sources/` — symbols with no published icon, copied into `public/icons/`. `.github/workflows/ci.yml` — typecheck and build on every push.
 - `src/main.tsx` stays the Solid entry. Stack stays Solid, Vite, TypeScript. Effect is a dependency; use it only if it removes a real branch.
 
 ## The link card (OG image)
