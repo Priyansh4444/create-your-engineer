@@ -66,7 +66,7 @@ To add a person: a verified handle, a real portrait at `public/faces/<id>.webp` 
 
 ## Marks
 
-The smallest form of a logo, wherever there is one: an icon in `public/icons/<id>.svg`, built by `scripts/build-icons.mjs` from simple-icons, then svgl.app, then an existing symbol. Where no icon exists the real lockup in `public/logos/<id>.svg` stands in, and where there is neither the plain name shows. Never an abbreviation drawn to look like a mark, a hotlinked file, or a made-up brand. Dark brand colours become off-white so they read on black.
+The smallest form of a logo, wherever there is one: an icon in `public/icons/<id>.svg`, built by `scripts/build-icons.mjs`. Prefer the real logo file as published online (svgl.app), unmodified, so it keeps its real colours; Google, Convex, and Figma are the cases that matter, because a single-colour glyph flattens them. Where svgl has nothing better, a simple-icons glyph in the brand colour; failing that, an existing symbol. Where no icon exists the real lockup in `public/logos/<id>.svg` stands in, and where there is neither the plain name shows. Never an abbreviation drawn to look like a mark, a hotlinked file, or a made-up brand. Dark brand colours become off-white so they read on black.
 
 A mark can be a company or a project (`projects` on a person: Vue, Vite and Oxc for Evan You, OpenCode and Effect for Kit). A card shows one mark: the current company if it has one, else the first project that does. Never an earlier employer. On a card the mark sits on a small dark plate, larger in the deck, where you choose, and small on a seat. The person peek lists the companies in order and, under "Works on", the projects. `src/marks.ts` holds the sets of ids that have an icon or a lockup.
 

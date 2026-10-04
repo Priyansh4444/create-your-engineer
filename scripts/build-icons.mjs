@@ -3,8 +3,9 @@
  * Builds the compact marks in public/icons/ (the smallest form of each logo) and the list
  * of which ids have one. Run: node scripts/build-icons.mjs
  *
- * An icon comes from simple-icons when it has one, then from svgl.app, then from an
- * existing symbol-only file in public/logos/. Anything left over falls back to its lockup.
+ * An icon is the real logo file from svgl.app where that is the better one, otherwise a
+ * simple-icons glyph in the brand colour, otherwise an existing symbol-only file in
+ * public/logos/. Anything left over falls back to its lockup.
  */
 import * as si from "simple-icons";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
@@ -25,8 +26,15 @@ const simple = {
   epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github",
 };
 
-/** mark id -> svgl.app title, for what simple-icons lacks */
+/**
+ * mark id -> svgl.app title. These are the logos' own files, used as published, so they keep
+ * their real colours. It covers what simple-icons lacks, and it wins where a brand's real logo
+ * has more than one colour (Google, Convex, Figma) which a single-colour icon would flatten.
+ */
 const svgl = {
+  google: "Google", convex: "Convex", figma: "Figma", dropbox: "Dropbox", paypal: "PayPal", neovim: "Neovim",
+  nodejs: "Node.js", ghostty: "Ghostty", mozilla: "Firefox", trpc: "tRPC", redis: "Redis",
+  cloudflare: "Cloudflare", django: "Django", youtube: "YouTube", meta: "Meta",
   microsoft: "Microsoft", openai: "OpenAI", amazon: "Amazon", sourcegraph: "Sourcegraph", twitter: "Twitter",
   eventbrite: "Eventbrite", vue: "Vue", openclaw: "OpenClaw", oxc: "Oxc", rolldown: "Rolldown", xai: "xAI",
   coinbase: "Coinbase", cluely: "Cluely", anduril: "Anduril", joyent: "Joyent", libgdx: "libGDX",
@@ -63,7 +71,7 @@ for (const [id, title] of Object.entries(svgl)) {
   const res = await fetch(route);
   if (!res.ok) { console.log("svgl fetch failed", id); continue; }
   await writeFile(`public/icons/${id}.svg`, await res.text());
-  made.push(id);
+  if (!made.includes(id)) made.push(id);
 }
 
 for (const id of existing) {
