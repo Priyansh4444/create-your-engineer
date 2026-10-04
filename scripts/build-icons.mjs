@@ -24,7 +24,7 @@ const simple = {
   perplexity: "Perplexity", temporal: "Temporal", vite: "Vite", vitest: "Vitest", svelte: "Svelte",
   typescript: "Typescript", neovim: "Neovim", nodejs: "Nodedotjs", django: "Django", flask: "Flask", ghostty: "Ghostty",
   terraform: "Terraform", trpc: "Trpc", react: "React", nextjs: "Nextdotjs", solid: "Solid", effect: "Effect", opencode: "Opencode",
-  epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github", bluesky: "Bluesky", resend: "Resend", tldraw: "Tldraw", helium: "Helium", cobalt: "Cobalt",
+  epicgames: "Epicgames", hashicorp: "Hashicorp", github: "Github", bluesky: "Bluesky", resend: "Resend", laravel: "Laravel", tldraw: "Tldraw", helium: "Helium", cobalt: "Cobalt",
 };
 
 /**

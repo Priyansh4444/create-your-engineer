@@ -111,6 +111,7 @@ export const companyLabels = {
   khanacademy: "Khan Academy",
   imput: "imput",
   bluesky: "Bluesky",
+  laravel: "Laravel",
   disqus: "Disqus",
   liferay: "Liferay",
   workos: "WorkOS",

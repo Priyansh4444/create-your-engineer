@@ -147,4 +147,16 @@ export const roster: readonly RosterEntry[] = [
   entry("bakaus", "Paul Bakaus", "pbakaus", "Founder", ["google", "renaissancegeek"]),
   entry("puckett", "Josh Puckett", "joshpuckett", "Co-founder", ["iteration"]),
   entry("seth", "Seth Raphael", "magicseth", "AI Ergonomics", ["bump", "google", "convex"]),
+
+  entry("dillon", "Dillon Mulroy", "dillon_mulroy", "Engineer", ["cloudflare"]),
+  entry("jayv", "Jay V", "jayair", "CEO", ["sst", "anomaly"], ["opencode"]),
+  entry("fwang", "Frank Wang", "fanjiewang", "CTO", ["sst", "anomaly"], ["opencode"]),
+  entry("adamdev", "Adam", "adamdotdev", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("acline", "Aiden Cline", "rekram11", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("brendan", "Brendan Allan", "brendonovich", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("hona", "Luke Parker", "LukeParkerDev", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("nexxeln", "Shoubhit Dash", "nexxeln", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("arvsrn", "Aarav Sareen", "arvsrn", "Design engineer", ["anomaly"], ["opencode"]),
+  entry("simonklee", "Simon Klee", "simonklee", "OpenCode", ["anomaly"], ["opencode"]),
+  entry("dhill", "David Hill", "iamdavidhill", "Design", ["laravel", "anomaly"], ["opencode"]),
 ];
