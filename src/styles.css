@@ -1,0 +1,785 @@
+:root {
+  --bg: #000;
+  --surface: #0a0a0a;
+  --text: #ededed;
+  --muted: #8a8a8a;
+  --dim: #5c5c5c;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.26);
+  --sheet: 262px;
+  --sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: dark;
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+
+html,
+body { overflow-x: clip; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+#root { overflow-x: clip; }
+
+button, a, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { text-decoration: none; }
+h1, p { margin: 0; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.card-hit:focus-visible { outline-offset: -3px; }
+
+::selection { background: rgba(255, 255, 255, 0.18); color: #fff; }
+::placeholder { color: var(--dim); }
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- frame ---------- */
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  align-items: start;
+  gap: 24px;
+  width: min(1360px, calc(100% - 40px));
+  margin-inline: auto;
+  padding: 28px 0 20px;
+}
+
+.main { min-width: 0; }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 34px;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mark { width: 18px; height: 18px; flex: none; }
+
+h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+
+.header-end { display: flex; align-items: center; gap: 10px; }
+
+.count {
+  min-width: 42px;
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  margin: 12px 0 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 22px;
+}
+.intro p { margin: 0; }
+.intro.done .msg { color: var(--text); }
+.acts { display: flex; gap: 8px; }
+.pill:disabled { opacity: 0.6; cursor: default; }
+.pill.share { gap: 7px; }
+.pill.share img { filter: invert(1); }
+
+.icon-link {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: border-color 0.15s;
+}
+.icon-link:hover { border-color: var(--line-strong); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.pill:hover { border-color: var(--line-strong); }
+.pill.link { text-transform: none; letter-spacing: 0; }
+.pill.solid { background: var(--text); border-color: var(--text); color: #000; }
+.pill.solid:hover { background: #fff; border-color: #fff; }
+
+/* ---------- board ---------- */
+
+.board {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 22px 20px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* A soft radial light broken into a stipple. The layer drifts by transform only. */
+.light {
+  position: absolute;
+  z-index: -1;
+  top: -300px;
+  left: -220px;
+  width: 760px;
+  height: 760px;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, #fff 0.7px, transparent 0.95px),
+    radial-gradient(circle, #fff 0.7px, transparent 0.95px);
+  background-size: 6px 6px;
+  background-position: 0 0, 3px 3px;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0, 0, 0, 0.55) 35%, transparent 100%);
+  mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0, 0, 0, 0.55) 35%, transparent 100%);
+  opacity: 0.28;
+  will-change: transform;
+  animation: drift 40s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(900px, 420px, 0); }
+}
+
+.stage {
+  --sw: 1.2;
+  position: relative;
+  width: min(100%, 720px, max(440px, calc((100svh - 210px) * 1.0286)));
+  margin-inline: auto;
+  aspect-ratio: 720 / 700;
+  container-type: inline-size;
+}
+.stage[data-layout="narrow"] {
+  --sw: 0.4;
+  width: min(100%, max(260px, calc((100svh - 210px) * 0.7143)));
+  aspect-ratio: 100 / 140;
+}
+
+/* ---------- the orbit: a ring, a spoke from every seat, a core ---------- */
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trace {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.13);
+  stroke-width: var(--sw);
+  stroke-linecap: round;
+}
+.trace.spoke:not(.lit) {
+  stroke-dasharray: calc(var(--sw) * 0.1) calc(var(--sw) * 5);
+}
+
+/* A line draws itself in toward the core when its seat is taken. */
+.trace.lit {
+  stroke: #fff;
+  stroke-width: calc(var(--sw) * 1.5);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.85;
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.trace.lit.on { stroke-dashoffset: 0; }
+
+/* A light runs round the circle once anything is placed; a second joins it at seven. */
+.comet {
+  fill: none;
+  stroke: #fff;
+  stroke-width: calc(var(--sw) * 2.4);
+  stroke-linecap: round;
+  stroke-dasharray: 0.04 0.96;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.comet.on { opacity: 0.95; animation: run 7s linear infinite; }
+.comet.two.on { animation-delay: -3.5s; }
+@keyframes run { to { stroke-dashoffset: 0; } }
+
+/* At seven, two rings leave the core and cross the whole circle. */
+.burst {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+}
+.board.complete .burst { animation: burst 1.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.board.complete .burst.late { animation-delay: 0.22s; }
+@keyframes burst {
+  from { transform: scale(0.1); opacity: 0.9; }
+  to { transform: scale(1.12); opacity: 0; }
+}
+
+/* The core: seven arcs around an orb. Only transforms and opacity move. */
+.core {
+  position: absolute;
+  width: clamp(58px, 10cqw, 96px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  scale: 1;
+  transition: scale 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.board.complete .core { scale: 1.45; }
+
+.core-arcs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: turn 36s linear infinite;
+}
+.core-arc {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  transition: stroke 0.5s ease;
+}
+.core-arc.on { stroke: #fff; }
+.board.complete .core-arcs { animation-duration: 9s; }
+
+.core-orb {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fff, #bdbdbd 70%);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.45);
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.7s ease;
+}
+
+@keyframes turn { to { transform: rotate(360deg); } }
+
+/* ---------- seats ---------- */
+
+.slot {
+  --cw: clamp(56px, 16.6cqw, 140px);
+  position: absolute;
+  z-index: 1;
+  width: var(--cw);
+  aspect-ratio: 5 / 7;
+  transform: translate(-50%, -50%);
+}
+.stage[data-layout="narrow"] .slot { --cw: 20cqw; }
+
+.slot.magnet { z-index: 3; }
+
+
+/* A quiet edge on the seat that is open or about to receive a card. */
+.slot::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 1.5px solid #fff;
+  border-radius: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.slot.open::after { opacity: 0.5; }
+.slot.magnet::after { opacity: 1; }
+
+/* The category above a filled seat. It rises here from the middle of the seat. */
+.caption {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 2px;
+  z-index: 2;
+  transform-origin: left bottom;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #cfcfcf;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- cards ---------- */
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: #0d0d0d;
+  transition: border-color 0.15s, opacity 0.2s;
+}
+/* A seat uses the separate `scale` property, so anime.js's transform never fights a transition. */
+.slot .card { transition: border-color 0.15s, opacity 0.2s, scale 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.slot.magnet .card { scale: 1.06; }
+.card:hover,
+.card:focus-within { border-color: rgba(255, 255, 255, 0.5); }
+.slot.open .card { border-color: rgba(255, 255, 255, 0.55); }
+.slot.magnet .card { border-color: #fff; }
+
+.lifted { opacity: 0.28; }
+
+.card-hit {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  text-align: left;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+.slot .card-hit { touch-action: none; }
+.deck-card .card-hit,
+.seated .card-hit { cursor: grab; }
+
+.art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  user-select: none;
+}
+
+/* A light dither over the portrait, then a shade for the text. No blend modes. */
+.shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(rgba(0, 0, 0, 0.1) 0.5px, transparent 0.8px) 0 0 / 3px 3px,
+    linear-gradient(rgba(0, 0, 0, 0.5), transparent 30%),
+    linear-gradient(transparent 46%, rgba(0, 0, 0, 0.9));
+}
+
+.copy {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.name {
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-align: left;
+  text-shadow: 0 1px 3px #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: auto;
+}
+.name:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.line {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #f2f2f2;
+  font-size: 10.5px;
+  line-height: 1.3;
+  text-shadow: 0 1px 3px #000;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* The company mark, on its own plate so it reads on any portrait. An icon is square and can be big. */
+.lockup-row {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  z-index: 1;
+  display: block;
+  max-width: calc(100% - 14px);
+  height: 26px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+.lockup-row.icon { height: 28px; padding: 5px; border-radius: 8px; }
+.seated .lockup-row {
+  right: 6px;
+  left: auto;
+  top: 6px;
+  max-width: 62%;
+  height: 22px;
+  padding: 4px 8px;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.66);
+}
+.seated .lockup-row.icon { height: 26px; padding: 4px; }
+.lockup {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+.lockup.icon { object-position: center; }
+
+/* ---------- names ---------- */
+
+.tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #b8b8b8;
+  pointer-events: none;
+}
+.tag.bright { font-size: 11px; }
+
+.shine {
+  background-image: linear-gradient(105deg, #7a7a7a 0%, #7a7a7a 38%, #fff 50%, #7a7a7a 62%, #7a7a7a 100%);
+  background-size: 260% 100%;
+  background-position: 120% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 8s linear infinite;
+}
+.tag.bright {
+  background-image: linear-gradient(105deg, #cfcfcf 0%, #cfcfcf 34%, #fff 50%, #cfcfcf 66%, #cfcfcf 100%);
+  animation-duration: 4s;
+}
+.slot:nth-of-type(2n) .shine { animation-delay: -2.4s; }
+.slot:nth-of-type(3n) .shine { animation-delay: -5.1s; }
+
+@keyframes shine {
+  from { background-position: 120% 0; }
+  to { background-position: -40% 0; }
+}
+
+.hole {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.24);
+  background: radial-gradient(120% 90% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 60%), #080808;
+  text-align: center;
+}
+.hole .asks {
+  max-width: 100%;
+  color: var(--dim);
+  font-size: 9.5px;
+  line-height: 1.35;
+  text-wrap: balance;
+  pointer-events: none;
+}
+.slot.magnet .hole { border-style: solid; }
+.slot.open .hole { border-color: rgba(255, 255, 255, 0.6); }
+
+/* ---------- deck ---------- */
+
+.deck {
+  position: sticky;
+  top: 20px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100svh - 40px);
+  min-height: 0;
+  padding: 12px;
+  background: #050505;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  container-type: inline-size;
+}
+
+.tools { display: flex; flex: none; gap: 8px; }
+.filter { display: block; flex: 1; min-width: 0; }
+.icon-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #000;
+  color: var(--muted);
+  transition: border-color 0.15s, color 0.15s;
+}
+.icon-btn:hover { border-color: var(--line-strong); color: var(--text); }
+
+.line-input,
+.filter input {
+  width: 100%;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #000;
+  color: var(--text);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+.line-input:hover,
+.filter input:hover { border-color: var(--line-strong); }
+.line-input:focus-visible,
+.filter input:focus-visible { outline-offset: 1px; }
+
+/* Only present while a seat or a person is open. */
+.panel {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #000;
+}
+
+.hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.asks-inline { color: var(--muted); font-size: 12px; line-height: 1.35; }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.actions .pill { padding: 5px 9px; font-size: 10px; }
+
+.peek-face { width: 36px; height: 36px; flex: none; border-radius: 8px; object-fit: cover; }
+.peek-id { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.peek-id strong { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+.peek-id span { color: var(--muted); font-family: var(--mono); font-size: 10.5px; white-space: nowrap; }
+
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chain li { display: flex; align-items: center; gap: 8px; }
+.chain li + li::before { content: "›"; color: var(--dim); }
+.chain.plain li + li::before { content: none; }
+.works { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.works-label { color: var(--dim); font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
+.chain .lockup { height: 18px; max-width: 96px; }
+.chain .lockup.icon { height: 24px; width: 24px; }
+.chain-name {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+/* The people, scrolling downwards. Rows are sized from the deck's width so every card keeps its 5:7 shape. */
+.grid {
+  --cols: 3;
+  --gap: 10px;
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  grid-auto-rows: calc((100cqw - 24px - 8px - (var(--cols) - 1) * var(--gap)) / var(--cols) * 1.4);
+  align-content: start;
+  gap: var(--gap);
+  min-height: 0;
+  padding: 2px 6px 14px 2px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.deck-card { width: 100%; height: 100%; }
+.empty-grid { grid-column: 1 / -1; padding: 20px 0; color: var(--muted); font-size: 13px; text-align: center; }
+
+/* ---------- the card in the air ---------- */
+
+.ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  margin: 0;
+  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.6);
+  will-change: transform;
+  transition: none;
+}
+.ghost .card-hit { cursor: grabbing; }
+
+html.dragging,
+html.dragging * { cursor: grabbing !important; user-select: none; }
+
+/* ---------- tablet and phone: the deck becomes a sheet that scrolls downwards ---------- */
+
+@media (max-width: 999px) {
+  .app {
+    display: block;
+    width: calc(100% - 24px);
+    padding: 18px 0 calc(var(--sheet) + 14px);
+  }
+
+  .stage { width: min(100%, 720px, max(440px, calc((100svh - var(--sheet) - 190px) * 1.0286))); }
+  .stage[data-layout="narrow"] {
+    width: min(100%, max(260px, calc((100svh - var(--sheet) - 150px) * 0.7143)));
+  }
+
+  .deck {
+    position: fixed;
+    inset: auto 0 0 0;
+    top: auto;
+    height: var(--sheet);
+    gap: 8px;
+    padding: 10px 12px 0;
+    border-width: 1px 0 0;
+    border-radius: 16px 16px 0 0;
+    background: #000;
+  }
+
+  .panel {
+    order: -1;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+    height: 36px;
+    padding: 0;
+    overflow-x: auto;
+    border: 0;
+    background: transparent;
+    scrollbar-width: none;
+  }
+  .panel > * { flex: none; }
+  .panel .line-input { flex: 1 1 200px; min-width: 150px; }
+  .actions { flex-wrap: nowrap; }
+  .chain { flex-wrap: nowrap; }
+  .asks-inline { display: none; }
+
+  .filter input { height: 30px; }
+  .icon-btn { width: 30px; height: 30px; }
+  .grid { --cols: 4; --gap: 8px; padding-bottom: 16px; }
+}
+
+@media (min-width: 640px) and (max-width: 999px) {
+  :root { --sheet: 300px; }
+  .grid { --cols: 6; }
+  .asks-inline { display: inline; }
+}
+
+@media (max-width: 639px) {
+  h1 { font-size: 14px; }
+  .brand { gap: 8px; }
+  .header-end { gap: 6px; }
+  .header-end .pill { padding: 5px 9px; font-size: 10px; }
+  .count { min-width: 0; }
+  .intro { margin: 10px 0 12px; }
+  .board { padding: 18px 0 10px; border-radius: 14px; }
+  .light { width: 720px; height: 720px; top: -300px; left: -240px; }
+  .name { font-size: 11px; }
+  .line { font-size: 9.5px; }
+  .hole .tag { font-size: 9.5px; }
+  .hole .asks { display: none; }
+  .caption { bottom: calc(100% + 5px); font-size: 8px; letter-spacing: 0.12em; }
+  .seated .lockup-row { top: 5px; right: 5px; height: 18px; padding: 3px 6px; }
+  .seated .lockup-row.icon { height: 24px; padding: 4px; }
+  .deck-card .lockup-row { top: 5px; left: 5px; height: 20px; padding: 3px 6px; }
+  .deck-card .lockup-row.icon { height: 28px; padding: 4px; }
+  .copy { right: 6px; bottom: 6px; left: 6px; }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .shine {
+    background: none;
+    color: #b8b8b8;
+    -webkit-text-fill-color: currentColor;
+  }
+  .tag.bright { color: #fff; }
+}

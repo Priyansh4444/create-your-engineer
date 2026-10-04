@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.DS_Store
+.wrangler/
+
+# Portraits are other people's avatars. Fetch them with: node scripts/fetch-faces.mjs
+public/faces/*.webp
