@@ -135,4 +135,16 @@ export const roster: readonly RosterEntry[] = [
   entry("uwukko", "wukko", "uwukko", "Co-founder", ["imput"], ["helium", "cobalt"]),
   entry("zuck", "Mark Zuckerberg", "finkd", "Founder", ["meta"]),
   entry("fleury", "Ryan Fleury", "ryanjfleury", "RAD Debugger", ["epicgames"]),
+
+  entry("tibo", "Tibo", "thsottiaux", "Codex", ["deepmind", "openai"]),
+  entry("thariq", "Thariq", "trq212", "Claude Code", ["anthropic"]),
+  entry("ambrosino", "Andrew Ambrosino", "ajambrosino", "Codex app", ["openai"]),
+  entry("dan", "Dan Abramov", "gaearon", "Engineer", ["meta", "bluesky", "indie"], ["react"]),
+  entry("cramer", "David Cramer", "zeeg", "Co-founder", ["disqus", "dropbox", "sentry"]),
+  entry("cowling", "James Cowling", "jamesacowling", "Co-founder", ["dropbox", "convex"]),
+  entry("zeno", "Zeno Rocha", "zenorocha", "Founder", ["liferay", "workos", "resend"]),
+  entry("maeda", "John Maeda", "johnmaeda", "Design", ["risd", "microsoft"]),
+  entry("bakaus", "Paul Bakaus", "pbakaus", "Founder", ["google", "renaissancegeek"]),
+  entry("puckett", "Josh Puckett", "joshpuckett", "Co-founder", ["iteration"]),
+  entry("seth", "Seth Raphael", "magicseth", "AI Ergonomics", ["bump", "google", "convex"]),
 ];

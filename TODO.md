@@ -9,7 +9,8 @@
 - Share on X: a Worker and a KV store keep a 1200×630 card and serve the tags X unfurls into a large image. Copy puts the image on the clipboard. A GitHub link is in the header.
 - Shuffle: a button beside the filter gives the deck a new random order.
 - Everyone has a mark. Added the real logos for The Pragmatic Engineer, Molly Rocket, CrunchLabs, Discovery Loop, AngelList, Block, imput, tldraw, Helium, and Cobalt. Where a company has no published logo at all (Thinking Machines, Safe Superintelligence, Keen, Compose, and Independent), the card shows the X mark.
-- 104 people. Added wukko, Mark Zuckerberg, Ryan Fleury, Julius Marminge, and mark (@r_marked, both at T3), and others. Removed Guido van Rossum, Bryan Cantrill, Linus Sebastian, and MrBeast.
+- 115 people. Added Tibo, Thariq, Andrew Ambrosino, Dan Abramov, David Cramer, and the Abstract (Convex, 2 September 2026) speakers whose X handles could be confirmed: James Cowling, Zeno Rocha, John Maeda, Paul Bakaus, Josh Puckett, and Seth Raphael (@magicseth). Boris Cherny, Jamie Turner, and Theo were already in.
+- 104 people before that. Added wukko, Mark Zuckerberg, Ryan Fleury, Julius Marminge, and mark (@r_marked, both at T3), and others. Removed Guido van Rossum, Bryan Cantrill, Linus Sebastian, and MrBeast.
 - Jobs checked against search and X bios: Micky is now at Convex; Jeff Dean left Google on 5 August 2026 to co-found Discovery Loop; Demis Hassabis is Alphabet's chief scientist; Teej's bio lists Neovim core and terminal.shop; Cursor is inside SpaceX; Ryan Vogel is OpenCode via Neon and Databricks.
 - The repo is on GitHub. Portraits are not committed; `scripts/fetch-faces.mjs` fetches them.
 
@@ -21,4 +22,6 @@
 - Marks: Thinking Machines, Safe Superintelligence, Keen, Compose, Boot.dev, Bump, PartyKit, Anomaly, AI Hero, and id have no published logo, so they show their name in the peek and the card falls back to the X mark. The Pragmatic Engineer's and Molly Rocket's logos are published only as raster images, wrapped as they are.
 - Grant Sanderson and Derek Muller have channel logos as portraits, because Wikipedia has no photo and X avatars were rate limited. Swap in the X avatars with `scripts/fetch-faces.mjs` when it is allowed.
 - On a 667px-tall phone the circle is clamped to a readable minimum and the lowest seats scroll under the sheet.
-- Dan Abramov and Daniela Amodei stay out until a portrait and employment check out.
+- Abstract speakers not added because no X handle could be confirmed: Meagan Rose Gamache (Cloudflare), Luke Whiting (Convex), Diana Tobey (IDEO), Shona Dutta, Angel Steger (Wealthfront), and Jean-Denis Grèze (Town). Send handles and they go straight in.
+- Dan Abramov's current employer is unclear (his X bio is just "Programmeur"); he is listed as independent after Meta and Bluesky, and his portrait is his GitHub photo because his X avatar is blank.
+- Daniela Amodei stays out until a portrait and employment check out.
